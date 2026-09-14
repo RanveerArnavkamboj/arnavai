@@ -192,7 +192,7 @@
             }
 
             input {
-                width: 250px;
+                width: 200px;
             }
 
             .button {
@@ -242,52 +242,29 @@
 
         import { marked } from "https://cdn.jsdelivr.net/npm/marked@15.0.12/+esm"
 
-        import { GoogleGenAI } from "https://esm.run/@google/genai";
+           import { InferenceClient } from 'https://cdn.jsdelivr.net/npm/@huggingface/inference@4.13.28/+esm';
 
-        const ai = new GoogleGenAI({
-            apiKey: "AQ.Ab8RN6Kx_ge6U_8M1GKZ3g2955KW1sh9NN551HanQGHy6qXyIg"
+    const client = new InferenceClient("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");
+        async function getaiinfo(userQuestion) {
+      try {
+        const out = await client.chatCompletion({
+          model: "meta-llama/Llama-3.1-8B-Instruct",
+          messages: [
+            { role: "user", content: userQuestion }
+          ]
         });
-        const chat = ai.chats.create({
-            model: "gemini-3.5-flash-lite",
-            history: [],
+        return out.choices[0].message.content;
 
-            config: {
-                systemInstruction: "you are Arnav Ai made by Arnav Kamboj",
-                temperature: 1,
-                maxOutputTokens: 1024,
-            }
-        });
-        console.log(chat.history)
-        async function getaiinfo(input) {
-            try {
-
-                const interaction = await chat.sendMessage({
-                    message: input,
-                });
-
-                localStorage.setItem('history', JSON.stringify(chat.history));
-
-
-
-
-                return interaction.text;
-            } catch (error) {
-                console.log(error)
-                return "Something went wrong : Try Again";
-            }
-
-        }
+      } catch (error) {
+        console.log("Error:", error);
+        card.textContent = "Something went wrong : Try Again"
+      }
+    }
         document.addEventListener('DOMContentLoaded', async () => {
             let savedContent = localStorage.getItem('savedDivData');
             if (savedContent) {
                 res.innerHTML = savedContent;
-            }
-            let a = localStorage.getItem('history');
-            if (a && a !== "null" && a !== "undefined" && a !== "") {
-                chat.history = JSON.parse(a);
-
-            }
-            console.log(chat.history)
+            }          
         });
 
 
@@ -342,7 +319,7 @@
                 cards.remove()
             })
             yes.addEventListener("click", () => {
-                localStorage.removeItem('history')
+                
                 let storevalue = ""
                 localStorage.setItem('savedDivData', storevalue);
                 location.reload();
