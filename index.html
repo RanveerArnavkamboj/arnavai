@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            padding: 30px 250px;
+        }
+
+        .yes {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: green;
+            background-color: rgba(0, 255, 0, 0.4);
+            border: 1px solid rgb(92, 180, 92);
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .cancel {
+            margin-left: 10px;
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: red;
+            background-color: rgba(255, 0, 0, 0.4);
+            border-radius: 5px;
+            border: 1px solid rgb(158, 82, 82);
+        }
+
+        .showtext {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: red;
+            margin: 20px 5px 100px 5px;
+            overflow: hidden;
+        }
+
+        .cards {
+            text-align: center;
+            position: fixed;
+            top: 40vh;
+            left: 40vw;
+            width: 400px;
+            height: 270px;
+            background-color: white;
+
+        }
+
+        .user {
+            display: inline-block;
+            align-self: flex-end;
+            padding: 15px;
+            margin-top: 20px;
+            line-height: 1.6;
+            color: black;
+            font-size: 20px;
+            background-color: rgb(255, 212, 252);
+            border: none;
+            border-radius: 10px;
+        }
+
+        .load {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .cont {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .search {
+            background-color: white;
+
+            width: 100vw;
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            position: fixed;
+            bottom: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button {
+            padding: 15px 35px;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: rgb(255, 212, 252);
+        }
+
+        input {
+            width: 500px;
+            padding: 5px;
+            height: 45px;
+            border: 2px solid black;
+            border-radius: 10px;
+            background-color: rgb(255, 212, 252);
+            font-size: 20px;
+        }
+
+        .res {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 120px;
+            align-items: center;
+        }
+
+        .resg {
+            display: fixed;
+            top: 0;
+            bottom: 400px;
+            padding: 15px;
+            margin-top: 20px;
+            line-height: 1.6;
+            color: black;
+            font-size: 20px;
+
+            border: none;
+            border-radius: 10px;
+        }
+
+        .resg h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .resg h2 {
+            font-size: 23px;
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        .resg h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 6px;
+        }
+
+        .resg p {
+            margin: 8px 0;
+        }
+
+        .resg strong {
+            font-weight: bold;
+        }
+
+        .del {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            padding: 7px 25px;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: rgba(255, 0, 0, 0.4);
+        }
+
+        .top {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px 15px;
+            font-size: 20px;
+            position: fixed;
+            right: 5px;
+            top: 50vh;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 15px;
+
+            }
+
+            input {
+                width: 350px;
+            }
+
+            .button {
+                padding: 10px 25px;
+            }
+
+            .cards {
+                left: 0;
+                width: 100%;
+                height: 270px;
+                background-color: white;
+            }
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+
+    <main>
+        <button class="del">Delete history</button>
+        <button class="top">^</button>
+        <div class="cont">
+            <div class="res"></div>
+            <div class="search">
+                <input type="text">
+                <button class="button">search</button>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+
+        let input = document.querySelector("input")
+        let btn = document.querySelector(".button")
+        let res = document.querySelector(".res")
+        let body = document.querySelector("main")
+        let del = document.querySelector(".del")
+        let top = document.querySelector(".top")
+        let cont = document.querySelector(".cont")
+        let getsaved
+
+
+
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked@15.0.12/+esm"
+
+        import { GoogleGenAI } from "https://esm.run/@google/genai";
+
+        const ai = new GoogleGenAI({
+            apiKey: "AQ.Ab8RN6K8x9ZrIG24CI4avOlpMIzznWiiyKQvfFxd5JA24kZSXA"
+        });
+        const chat = ai.chats.create({
+            model: "gemini-3.1-flash-lite",
+            history: [],
+
+            config: {
+                systemInstruction: "you are Arnav Ai made by Arnav Kamboj",
+                temperature: 1,
+                maxOutputTokens: 1024,
+            }
+        });
+        console.log(chat.history)
+        async function getaiinfo(input) {
+            try {
+
+                const interaction = await chat.sendMessage({
+                    message: input,
+                });
+
+                localStorage.setItem('history', JSON.stringify(chat.history));
+
+
+
+
+                return interaction.text;
+            } catch (error) {
+                console.log(error)
+                return "Something went wrong : Try Again";
+            }
+
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            let savedContent = localStorage.getItem('savedDivData');
+            if (savedContent) {
+                res.innerHTML = savedContent;
+            }
+            let a = localStorage.getItem('history');
+            if (a && a !== "null" && a !== "undefined" && a !== "") {
+                chat.history = JSON.parse(a);
+
+            }
+            console.log(chat.history)
+        });
+
+
+        btn.addEventListener("click", async () => {
+            window.scrollTo({ top: res.scrollHeight, behavior: "smooth" });
+            btn.disabled = true
+            let userinput = document.createElement("div")
+            userinput.classList.add("user")
+            res.append(userinput)
+            userinput.textContent = input.value
+            let card = document.createElement("div")
+            res.append(card)
+            card.textContent = "LOADING ...."
+            card.classList.add("load")
+            let r = await getaiinfo(input.value);
+            card.classList.remove("load")
+            card.classList.add("resg")
+            input.value = ""
+            card.innerHTML = marked.parse(r);
+            btn.disabled = false
+            let storevalue = res.innerHTML
+
+            localStorage.setItem('savedDivData', storevalue);
+
+        })
+
+        del.addEventListener("click", () => {
+            del.disabled = true
+            input.disabled = true
+            btn.disabled = true
+            let cards = document.createElement("div")
+            cards.classList.add("cards")
+            body.append(cards)
+            let cancel = document.createElement("button")
+            let yes = document.createElement("button")
+            let suretext = document.createElement("div")
+            cards.append(suretext)
+            cards.append(yes)
+            cards.append(cancel)
+            suretext.classList.add("showtext")
+            yes.classList.add("yes")
+            cancel.classList.add("cancel")
+            yes.textContent = "YES"
+            cancel.textContent = "Cancel"
+            suretext.textContent = "Are you sure you want to delete all history of this chat"
+
+
+            cancel.addEventListener("click", () => {
+                del.disabled = false
+                input.disabled = false
+                btn.disabled = false
+                cards.remove()
+            })
+            yes.addEventListener("click", () => {
+                localStorage.removeItem('history')
+                let storevalue = ""
+                localStorage.setItem('savedDivData', storevalue);
+                location.reload();
+                del.disabled = false
+                input.disabled = false
+                btn.disabled = false
+                cards.remove()
+            })
+        })
+        top.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+
+    </script>
+</body>
+
+</html>
